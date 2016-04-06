@@ -102,9 +102,9 @@ def actionInput(path_list:[Path]):
 				invalid_input = False 
 				updateFileTime(path_list)
 			else:
-				print("4")
+				print("ERROR")
 		else:
-			print("5")
+			print("ERROR")
 
 def printFilePath(path_list:[Path]):
 	'''This function prints the path of a file'''
