@@ -7,10 +7,13 @@ def directoryInput():
 	invalid_input = True
 	while(invalid_input):
 		str_input = input("")
-		p = Path(str_input)
-		if(p.exists()):
-			invalid_input = False
-			actionInput(searchInput(p))
+		if(len(str_input) != 0):
+			p = Path(str_input)
+			if(p.exists()):
+				invalid_input = False
+				actionInput(searchInput(p))
+			else:
+				print("ERROR")
 		else:
 			print("ERROR")
 
@@ -20,26 +23,25 @@ def searchInput(p:Path)->[Path]:
 
 	invalid_input = True
 	file_list = findFiles(p)
+
 	while (invalid_input):
 		str_input = input("")
-		choice = str_input[0].lower()
-		arg = str_input[2:]
-		found_list = []
+		if (len(str_input) != 0): 
+			choice = str_input[0].lower()
+			arg = str_input[2:]
+			found_list = []
 
-		if (choice == 'n'):
-			found_list = findSpecificFile(file_list,arg)
-		elif (choice == 'e'):
-			found_list = findFileWithExtension(file_list,arg)
-		elif (choice == 's'):
-			if (arg.isdigit()):
-				found_list = findFileBySize(file_list,eval(arg))
+			if (choice == 'n'):
+				found_list = findSpecificFile(file_list,arg)
+			elif (choice == 'e'):
+				found_list = findFileWithExtension(file_list,arg)
+			elif (choice == 's'):
+				if (arg.isdigit()):
+					found_list = findFileBySize(file_list,eval(arg))
 
-		if (len(found_list) != 0):
-				invalid_input = False
+			if (len(found_list) != 0):
 				return found_list
-		else:
-			print("ERROR")
-
+		print("ERROR")
 	return[]
 
 def findFiles(path:Path)->[Path]:
@@ -79,20 +81,23 @@ def actionInput(path_list:[Path]):
 
 	while(invalid_input):
 		str_input = input("")
-		choice = str_input[0].lower()
+		if(len(str_input) != 0):
+			choice = str_input[0].lower()
 
-		if (choice == 'p'):
-			invalid_input = False
-			printFilePath(path_list)
-		elif (choice == 'f'):
-			invalid_input = False
-			printFileContents(path_list)
-		elif (choice == 'd'):
-			invalid_input = False
-			duplicateFile(path_list)
-		elif (choice == 't'):
-			invalid_input = False 
-			updateFileTime(path_list)
+			if (choice == 'p'):
+				invalid_input = False
+				printFilePath(path_list)
+			elif (choice == 'f'):
+				invalid_input = False
+				printFileContents(path_list)
+			elif (choice == 'd'):
+				invalid_input = False
+				duplicateFile(path_list)
+			elif (choice == 't'):
+				invalid_input = False 
+				updateFileTime(path_list)
+			else:
+				print("ERROR")
 		else:
 			print("ERROR")
 
