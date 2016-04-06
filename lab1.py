@@ -10,8 +10,10 @@ def directoryInput():
 		if(len(str_input) != 0):
 			p = Path(str_input)
 			if(p.exists()):
-				invalid_input = False
-				actionInput(searchInput(p))
+				found_files = searchInput(p)
+				if (len(found_files) != 0):
+					invalid_input = False
+					actionInput(found_files)
 			else:
 				print("ERROR")
 		else:
@@ -21,9 +23,8 @@ def searchInput(p:Path)->[Path]:
 	'''This function gives the user the option to find a specific file (n), find files with a specific extention (e), or find files greater
 	than a given size (s).'''
 
-	invalid_input = True
 	file_list = findFiles(p)
-
+	invalid_input = True
 	while (invalid_input):
 		str_input = input("")
 		if (len(str_input) != 0): 
@@ -37,20 +38,24 @@ def searchInput(p:Path)->[Path]:
 				found_list = findFileWithExtension(file_list,arg)
 			elif (choice == 's'):
 				if (arg.isdigit()):
-					found_list = findFileBySize(file_list,eval(arg))
-
+					found_list = findFileBySize(file_list,eval(arg))		
 			if (len(found_list) != 0):
 				return found_list
-		print("ERROR")
+		else:
+			print("ERROR")
 	return[]
 
 def findFiles(path:Path)->[Path]:
 	lst = []
 	for p in path.iterdir():
-		if(p.is_file()):
-			lst.append(p)
-		elif(p.is_dir()):
-			lst.extend(findFiles(p))
+		try:
+			if(p.is_file()):
+				lst.append(p)
+			elif(p.is_dir()):
+				lst.extend(findFiles(p))
+
+		except:
+			continue
 	return lst
 
 def findSpecificFile(path_list:[Path], file_name:str)->[Path]:
@@ -97,9 +102,9 @@ def actionInput(path_list:[Path]):
 				invalid_input = False 
 				updateFileTime(path_list)
 			else:
-				print("ERROR")
+				print("4")
 		else:
-			print("ERROR")
+			print("5")
 
 def printFilePath(path_list:[Path]):
 	'''This function prints the path of a file'''
@@ -109,10 +114,13 @@ def printFilePath(path_list:[Path]):
 def printFileContents(path_list:[Path]):
 	'''This function prints the first line of the content of each file'''
 	for path in path_list:
-		file = path.open()
-		print(path)
-		print(file.readline())
-		file.close()
+		try:
+			file = path.open()
+			print(path)
+			print(file.readline())
+			file.close()
+		except:
+			print("ERROR")
 
 def duplicateFile(path_list:[Path]):
 	'''This function creates a copy of a file, adds ".dup" to the end of the filename, and saves it in the same directory as the
