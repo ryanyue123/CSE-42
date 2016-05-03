@@ -1,9 +1,12 @@
+#Ryan Yue 69858941
+#Ricky Tham 35566858
+
 import os
 from pathlib import Path
 import shutil
 
 def directoryInput():
-	'''This function prompts the user to input a directory. If the directory is not found, it will prompt the user.'''
+	"""This function prompts the user to input a directory. If the directory is not found, it will prompt the user again."""
 	invalid_input = True
 	while(invalid_input):
 		str_input = input("")
@@ -19,9 +22,9 @@ def directoryInput():
 		else:
 			print("ERROR")
 
-def searchInput(p:Path)->[Path]:
-	'''This function gives the user the option to find a specific file (n), find files with a specific extention (e), or find files greater
-	than a given size (s).'''
+def searchInput(p:Path):
+	"""This function gives the user the option to find a specific file (n), find files with a specific extention (e), or find files greater
+	than a given size (s)."""
 
 	file_list = findFiles(p)
 	invalid_input = True
@@ -32,20 +35,23 @@ def searchInput(p:Path)->[Path]:
 			arg = str_input[2:]
 			found_list = []
 
-			if (choice == 'n'):
+			if (choice == "n"):
 				found_list = findSpecificFile(file_list,arg)
-			elif (choice == 'e'):
+			elif (choice == "e"):
 				found_list = findFileWithExtension(file_list,arg)
-			elif (choice == 's'):
+			elif (choice == "s"):
 				if (arg.isdigit()):
 					found_list = findFileBySize(file_list,eval(arg))		
 			if (len(found_list) != 0):
 				return found_list
+			else:
+				print("ERROR")
 		else:
 			print("ERROR")
 	return[]
 
-def findFiles(path:Path)->[Path]:
+def findFiles(path:Path):
+	"""This function recursively finds all the files within a given directory. It returns a list of Path objects with the Path of each file"""
 	lst = []
 	for p in path.iterdir():
 		try:
@@ -58,21 +64,24 @@ def findFiles(path:Path)->[Path]:
 			continue
 	return lst
 
-def findSpecificFile(path_list:[Path], file_name:str)->[Path]:
+def findSpecificFile(path_list:[Path], file_name:str):
+	"""This function finds a specific file, given its file name and a list of files"""
 	lst = []
 	for p in path_list:
 		if (p.name == file_name):
 			lst.append(p)
 	return lst
 
-def findFileWithExtension(path_list:[Path], ext:str)->[Path]:
+def findFileWithExtension(path_list:[Path], ext:str):
+	"""This function returns a list of files with a given extension"""
 	lst = []
 	for p in path_list:
-		if(p.suffix == ext or p.suffix == '.' + ext):
+		if(p.suffix == ext or p.suffix == "." + ext):
 			lst.append(p)
 	return lst
 
-def findFileBySize(path_list:[Path], size:int)->[Path]:
+def findFileBySize(path_list:[Path], size:int):
+	"""This function returns a list of files that are greater than a given size"""
 	lst = []
 	for p in path_list:
 		if(p.stat().st_size > size):
@@ -80,8 +89,8 @@ def findFileBySize(path_list:[Path], size:int)->[Path]:
 	return lst
 
 def actionInput(path_list:[Path]):
-	'''This function gives the user the option to print the path of the given file (p), print the first line of the contents of a given file (f),
-	duplicate the file by adding ".dup" to the end of the file name (d), or update the access/modified time of the file (t)'''
+	"""This function gives the user the option to print the path of the given file (p), print the first line of the contents of a given file (f),
+	duplicate the file by adding ".dup" to the end of the file name (d), or update the access/modified time of the file (t)"""
 	invalid_input = True
 
 	while(invalid_input):
@@ -89,16 +98,16 @@ def actionInput(path_list:[Path]):
 		if(len(str_input) != 0):
 			choice = str_input[0].lower()
 
-			if (choice == 'p'):
+			if (choice == "p"):
 				invalid_input = False
 				printFilePath(path_list)
-			elif (choice == 'f'):
+			elif (choice == "f"):
 				invalid_input = False
 				printFileContents(path_list)
-			elif (choice == 'd'):
+			elif (choice == "d"):
 				invalid_input = False
 				duplicateFile(path_list)
-			elif (choice == 't'):
+			elif (choice == "t"):
 				invalid_input = False 
 				updateFileTime(path_list)
 			else:
@@ -107,12 +116,12 @@ def actionInput(path_list:[Path]):
 			print("ERROR")
 
 def printFilePath(path_list:[Path]):
-	'''This function prints the path of a file'''
+	"""This function prints the path of a file"""
 	for path in path_list:
 		print(path)
 
 def printFileContents(path_list:[Path]):
-	'''This function prints the first line of the content of each file'''
+	"""This function prints the first line of the content of each file"""
 	for path in path_list:
 		try:
 			file = path.open()
@@ -123,15 +132,15 @@ def printFileContents(path_list:[Path]):
 			print("ERROR")
 
 def duplicateFile(path_list:[Path]):
-	'''This function creates a copy of a file, adds ".dup" to the end of the filename, and saves it in the same directory as the
-	original file'''
+	"""This function creates a copy of a file, adds ".dup" to the end of the filename, and saves it in the same directory as the
+	original file"""
 	for path in path_list:
 		shutil.copy2(str(path),str(path)+".dup")
 
 def updateFileTime(path_list:[Path]):
-	'''This function updates the access/modified time of the given file'''
+	"""This function updates the access/modified time of the given file"""
 	for path in path_list:
 		os.utime(str(path), None)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	directoryInput()
