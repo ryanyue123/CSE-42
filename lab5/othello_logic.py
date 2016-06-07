@@ -96,21 +96,19 @@ class OthelloGamestate:
 			return True
 		return False
 
-	def check_board_conditions(self) -> bool:
+	def check_board_conditions(self):
 		"""This method checks if one color still has moves left on the board"""
 		for i in range(self.get_num_row()):
 			for j in range(self.get_num_col()):
 				if self.gameboard[i][j] == ".":
 					if (len(self.check_pieces_to_flip(i,j)) != 0):
-						return True
+						return
 		if (self.get_current_color() == "B"):
 			self.black_can_move = False
 			self.move = self.get_opposite_color()
 		else:
 			self.white_can_move = False
 			self.move = self.get_opposite_color()
-		return False
-
 
 	def check_move(self, row, col) -> bool:
 		"""This method checks if the move that the user entered is valid. It checks if it is within the game board bounds,
