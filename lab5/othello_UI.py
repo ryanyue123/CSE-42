@@ -1,9 +1,16 @@
+# Ryan Yue
+# 69858941
+
 import othello_logic
 import tkinter
 from tkinter import messagebox
 
 class LaunchScreen:
+	'''This class represents the settings screen of the application. The settings screen allows the user to manipulate the
+	game board - change number of rows, columns, choose who goes first, control the setup of the board, and choose the win
+	condition. After the user clicks begin, it will return to the main game application.'''
 	def __init__(self):
+		'''sets up the initial conditions of the tkinter toplevel.'''
 		self._detail_window = tkinter.Toplevel()
 		self._font = ('Helvetica', 16)
 		self._num_rows = 1
@@ -12,7 +19,7 @@ class LaunchScreen:
 		self._left_corner_color = ""
 		self._win_condition = ""
 
-		# LABELS
+		# Creates and grids all LABELS
 		game_label = tkinter.Label(
 			master = self._detail_window,
 			text = "Othello FULL GAME",
@@ -85,7 +92,7 @@ class LaunchScreen:
 			pady = 10,
 			sticky = tkinter.W
 		)
-		# ENTRY
+		# Creates and grids all Input Widgets
 		self._row_entry = tkinter.Spinbox(
 			master = self._detail_window,
 			from_ = 4,
@@ -151,7 +158,7 @@ class LaunchScreen:
 			sticky = tkinter.E
 		)
 
-		# BUTTONS
+		# Creates and grids all Buttons
 		cancel_button = tkinter.Button(
 			master = self._detail_window,
 			text = "CANCEL",
@@ -180,6 +187,7 @@ class LaunchScreen:
 			pady = 10,
 			sticky = tkinter.N + tkinter.W
 		)
+		# Configure rows and columns so that resizing the canvas adds to each row and column proportionally
 		self._detail_window.rowconfigure(0, weight = 1)
 		self._detail_window.rowconfigure(1, weight = 1)
 		self._detail_window.rowconfigure(2, weight = 1)
@@ -191,10 +199,12 @@ class LaunchScreen:
 		self._detail_window.columnconfigure(1, weight = 1)
 
 	def show(self) -> None:
+		'''Shows the toplevel window and waits until the toplevel is dismissed'''
 		self._detail_window.grab_set()
 		self._detail_window.wait_window()
 
 	def start_click(self) -> None:
+		'''If the begin button is clicked, gather all the inputs from the input fields'''
 		self._started = True
 		self._num_rows = self._row_entry.get()
 		self._num_col = self._col_entry.get()
@@ -204,9 +214,11 @@ class LaunchScreen:
 		if (self.check_inputs()):
 			self._detail_window.destroy()
 		else:
+			# Error produces a message box to tell the user to check their inputs
 			tkinter.messagebox.showinfo("Error", "Please check your inputs")
 
 	def check_inputs(self) -> bool:
+		'''This function makes sure the inputs acceptable for the othello game'''
 		accepted_colors = ["B", "W"]
 		accepted_win_conditions = [">", "<"]
 		if (self._first_move in accepted_colors):
@@ -214,35 +226,41 @@ class LaunchScreen:
 				return True
 		return False
 
-	def started(self):
+	def started(self) -> bool:
 		return self._started
 
-	def num_rows(self):
+	def num_rows(self) -> int:
 		return int(self._num_rows)
 
-	def num_col(self):
+	def num_col(self) -> int:
 		return int(self._num_col)
 
-	def first_move(self):
+	def first_move(self) -> str:
 		return self._first_move
 
-	def left_corner(self):
+	def left_corner(self) -> str:
 		return self._left_corner_color
 
-	def win_condition(self):
+	def win_condition(self) -> str:
 		return self._win_condition
 
 	def quit(self) -> None:
+		'''Destroys the settings window'''
 		self._started = False
 		self._detail_window.destroy()
 
 class OthelloApplication:
+	'''This class represents the othello game application. This is where the game board will be drawn and where the users
+	will click to interact with the game'''
 	def __init__(self):
+		'''Sets up the initial state of the game. If the user does not choose to alter the game settings, the board defautls to
+		a 4 x 4 gameboard'''
 		self._game = othello_logic.OthelloGamestate(4, 4, "B", "B", ">")
 		self._num_rows = self._game.get_num_row()
 		self._num_col = self._game.get_num_col()
 
 		self._root_window = tkinter.Tk()
+		# Create and grid all the LABELS for the game
 		game_label = tkinter.Label(
 			master = self._root_window,
 			text = "Othello Game Full",
@@ -289,6 +307,7 @@ class OthelloApplication:
 			padx = 10,
 			pady = 10
 		)
+		# Create and grid the settings and clear board buttons
 		setup_button = tkinter.Button(
 			master = self._root_window,
 			text = "Settings",
@@ -313,6 +332,7 @@ class OthelloApplication:
 			padx = 10,
 			pady = 10
 		)
+		# creates and grids the canvas, which draws the game board
 		self._canvas = tkinter.Canvas(
 			master = self._root_window,
 			width = 600,
@@ -327,6 +347,7 @@ class OthelloApplication:
 			pady = 10,
 			sticky = tkinter.N + tkinter.S + tkinter.E + tkinter.W
 		)
+		# configures the rows and columns to resize accordingly.
 		self._root_window.rowconfigure(3, weight = 1)
 		self._root_window.columnconfigure(0, weight = 1)
 		self._root_window.columnconfigure(1, weight = 1)
@@ -338,17 +359,20 @@ class OthelloApplication:
 		self._draw_board()
 
 
-	def start(self):
+	def start(self) -> None:
 		self._root_window.mainloop()
 
-	def _canvas_resized(self, e: tkinter.Event):
+	def _canvas_resized(self, e: tkinter.Event) -> None:
+		'''When the canvas is resized, delete everything that is on the canvas and redraw it proportionally to the new size'''
 		try:
 			self._canvas.delete(tkinter.ALL)
 			self._draw_board()
 		except:
 			pass
 
-	def _canvas_clicked(self, e: tkinter.Event):
+	def _canvas_clicked(self, e: tkinter.Event) -> None:
+		'''Determine where the user clicked on the board and translate the pixel point to a row and column in the game board. Check to
+		see if that move is valid, then draw pieces accordingly'''
 		row = int((e.x/self._canvas.winfo_width())*self._num_rows)
 		col = int((e.y/self._canvas.winfo_height())*self._num_col)
 		if (self._game.check_move(row, col)):
@@ -361,7 +385,8 @@ class OthelloApplication:
 			if (self._game.continue_playing() == False):
 				self._win_label.config(text = "Winner: {}".format(self._game.end_game()))
 
-	def _draw_board(self):
+	def _draw_board(self) -> None:
+		'''Draws the gameboard on the canvas'''
 		cell_width = self._canvas.winfo_width()/self._num_rows
 		cell_height = self._canvas.winfo_height()/self._num_col
 		for i in range(self._num_rows):
@@ -372,21 +397,24 @@ class OthelloApplication:
 				elif (self._game.gameboard[i][j] == "W"):
 					self._draw_oval(i, j, cell_width, cell_height, "white")
 
-	def _draw_cell(self, row, col, cell_width, cell_height):
+	def _draw_cell(self, row, col, cell_width, cell_height) -> None:
+		'''Draws each cell, representing one position on the gameboard'''
 		start_x = row * cell_width
 		start_y = col * cell_height
 		end_x = start_x + cell_width
 		end_y = start_y + cell_height
 		self._canvas.create_rectangle(start_x, start_y, end_x, end_y, fill = "grey")
 
-	def _draw_oval(self, row, col, cell_width, cell_height, color):
+	def _draw_oval(self, row, col, cell_width, cell_height, color) -> None:
+		'''Draws a black or white oval in the cell depending on the piece'''
 		start_x = row * cell_width
 		start_y = col * cell_height
 		end_x = start_x + cell_width
 		end_y = start_y + cell_height
 		self._canvas.create_oval(start_x + 1, start_y + 1, end_x - 1, end_y - 1, fill = color)
 
-	def _new_game(self):
+	def _new_game(self) -> None:
+		'''Creates a new board and resets all the labels to the original state'''
 		self._game.new_gameboard()
 		self._draw_board()
 		self._score_label.config(text = "Black: 2 White: 2")
@@ -396,7 +424,9 @@ class OthelloApplication:
 		else:
 			self._win_label.config(text = "Win condition: color with the least pieces wins")
 
-	def _setup_game(self):
+	def _setup_game(self) -> None:
+		'''shows the launch screen when the settings button is clicked. Creates a new othello game with the inputs that
+		the user entered'''
 		launcher = LaunchScreen()
 		launcher.show()
 		if launcher._started:

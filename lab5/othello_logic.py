@@ -20,7 +20,7 @@ class OthelloGamestate:
 		self.gameboard = self._setup_gameboard()
 		self._setup_initial_piece_position()
 
-	def new_gameboard(self):
+	def new_gameboard(self):xq
 		self.gameboard = self._setup_gameboard()
 		self._setup_initial_piece_position()
 		self.move = self.original_move

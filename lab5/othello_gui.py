@@ -1,3 +1,6 @@
+# Ryan Yue
+# 69858941
+
 import othello_UI
 
 if __name__ == '__main__':
